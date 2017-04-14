@@ -11,7 +11,7 @@ class Character {
     this.destX = this.x; // destination x location of character
     this.destY = this.y; // destination y location of character
     this.height = 100; // height of character
-    this.width = 20; // width of character
+    this.radius = 20; // width of character
     this.alpha = 0; // lerp amount (from prev to dest, 0 to 1)
     this.direction = 0; // direction character is facing
     this.moveLeft = false; // if character is moving left

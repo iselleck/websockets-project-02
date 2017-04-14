@@ -60,7 +60,7 @@ var redraw = function redraw(time) {
  
       
       ctx.beginPath();
-      ctx.arc(square.x, square.y, square.width, 0, 2*Math.PI);
+      ctx.arc(square.x, square.y, square.radius, 0, 2*Math.PI);
       ctx.fill();
       ctx.closePath();
       
@@ -140,7 +140,10 @@ var redraw = function redraw(time) {
   for (var _i = 0; _i < shots.length; _i++) {
     var shot = shots[_i];
       
-      shot.x += shot.speed;
+      
+      
+      shot.x -=  Math.cos(shot.radian) * shot.speed;
+      shot.y -=  Math.sin(shot.radian) * shot.speed;
       
       ctx.beginPath();
       ctx.arc(shot.x, shot.y, shot.radius, 0, 2*Math.PI);
@@ -310,14 +313,15 @@ var reciveBall = function reciveBall(data) {
 var sendShot = function sendShot() {
   var square = squares[hash];
     var createdAt = new Date(); 
+     var radians = square.angle/Math.PI*180;
     
   var shot = {
     hash: hash,
     x: square.x,
     y: square.y,
-    direction: square.direction,
-    radius: 10,
-    speed: 2,
+    radian: radians,
+    radius: 8,
+    speed: 5,
     created: createdAt.getTime(),
     frames: 0
   };

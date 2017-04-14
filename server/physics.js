@@ -4,7 +4,7 @@ const Ball = require('./classes/Ball.js');
 
 let charList = {}; // list of characters
 const shots = []; // array of shots to handle
-let balls = {};
+const balls = [];
 
 const ballDirections = [{x: 1, y: 0}, {x: 1, y: 1}, {x: 0, y: 1}, {x: -1, y: 1}, {x: -1, y: 0}, {x: -1, y: -1}, {x: 0, y: -1}, {x: 1, y: -1} 
 ];
@@ -14,11 +14,12 @@ const ballTypes = ['normal', 'bounce', 'wrap'];
 // box collision check between two rectangles
 // of a set width/height
 const checkCollisions = (circ1, circ2, radius) => {
-    const distX = circ1.x - circ2.x;
-    const distY = circ1.y - circ2.y;
+    const distX = (circ1.x + circ1.radius) - (circ2.x - circ2.radius);
+    const distY = (circ1.y + circ1.radius) - (circ2.y - circ2.radius);
     const distance = Math.sqrt(distX * distX + distY * distY);
     
-    if (distance < circ1.width + circ2.radius) {
+    
+    if (distance < circ1.radius + circ2.radius) {
         console.log('u\'s hit dawg');
     return true; // is colliding
   }
@@ -44,10 +45,21 @@ const checkShotCollision = (character, shotObj) => {
 const checkShots = () => {
   // if we have attack
     //console.log(shots.length);
+    
+     let keys = Object.keys(charList);
+    let ballKeys = Object.keys(balls);
+    let ballList = balls;
+    let characters = charList;
+    
+    
+    console.log(ballKeys.length);
+        for(b = 0; b < ballKeys.length; b++){
+            const ball1 = ballList[ballKeys[b]];
+           // console.log(ball1.x);
+        }
+    
   if (shots.length > 0) {
     // get all characters
-    const keys = Object.keys(charList);
-    const characters = charList;
 
     // for each attack
     for (let i = 0; i < shots.length; i++) {
@@ -68,12 +80,13 @@ const checkShots = () => {
          // console.log('miss');
         }
       }
-
-      // once the attack has been calculated again all users
-      // remove this attack and move onto the next one
-//      shots.splice(i);
-      // decrease i since our splice changes the array length
-//      i--;
+      
+        for(b = 0; b < ballKeys.length; b++){
+            const ball1 = ballList[ballKeys[b]];
+            console.log(ball1.x);
+           const hit = checkCollisions(ball1, shots[i], shots[i].radius);
+        }
+       
     }
   }
 };
@@ -120,6 +133,10 @@ const removeShot = (shot) => {
     shots.splice(shot, 1);
 };
 
+const removeBall = (ball) => {
+  delete balls[ball.createdAt];  
+};
+
 // update our entire character list
 const setCharacterList = (characterList) => {
   charList = characterList;
@@ -151,4 +168,5 @@ module.exports.setCharacter = setCharacter;
 module.exports.addShot = addShot;
 module.exports.updateShot = updateShot;
 module.exports.removeShot = removeShot;
+module.exports.removeBall = removeBall;
 module.exports.upBall = upBall;

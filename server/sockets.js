@@ -84,6 +84,10 @@ const setupSockets = (ioServer) => {
       socket.on('updateBallPos', (data) => {
           physics.upBall(data);
       });
+      
+      socket.on('removeBall', (data) => {
+          physics.removeBall(data);
+      });
 
     // when this user sends an attack request
     socket.on('shot', (data) => {
@@ -93,48 +97,9 @@ const setupSockets = (ioServer) => {
       // I only did this because I did not code
       // for all player directions.
       let handleShotEvent = true;
-
-      // which direction is the user attacking in
-      // will be an integer from our directions structure
-      switch (shot.direction) {
-        // if down, set the height/width of attack to face down
-        // and offset attack downward from user
-        case directions.DOWN: {
-          shot.width = 66;
-          shot.height = 183;
-          shot.y = shot.y + 121;
-          break;
-        }
-        // if left, set the height/width of attack to face left
-        // and offset attack left from user
-        case directions.LEFT: {
-          shot.width = 183;
-          shot.height = 66;
-          shot.x = shot.x - 183;
-          break;
-        }
-        // if right, set the height/width of attack to face right
-        // and offset attack right from user
-        case directions.RIGHT: {
-          shot.width = 183;
-          shot.height = 66;
-          shot.x = shot.x + 61;
-          break;
-        }
-        // if up, set the height/width of attack to face up
-        // and offset attack upward from user
-        case directions.UP: {
-          shot.width = 66;
-          shot.height = 183;
-          shot.y = shot.y - 183;
-          break;
-        }
-        // any other direction we will not handle
-        default: {
-          handleShotEvent = false;
-        }
-      }
-
+        shot.y -= 2;
+        shot.x += 6;
+        
       // if handling the attack
       if (handleShotEvent) {
         // send the graphical update to everyone
