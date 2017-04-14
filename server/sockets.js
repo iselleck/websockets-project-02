@@ -34,6 +34,10 @@ const emitBalls = (ball) => {
     io.sockets.in('room1').emit('addBall', ball);
 };
 
+const handleHitBall = (ballIn) => {
+    io.sockets.in('room1').emit('ballHit', ballIn);
+};
+
 // function to setup our socket server
 const setupSockets = (ioServer) => {
   // set our io server instance
@@ -130,3 +134,4 @@ const setupSockets = (ioServer) => {
 module.exports.setupSockets = setupSockets;
 module.exports.handleShot = handleShot;
 module.exports.emitBalls = emitBalls;
+module.exports.handleHitBall = handleHitBall;

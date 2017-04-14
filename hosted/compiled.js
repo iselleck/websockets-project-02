@@ -248,6 +248,7 @@ var init = function init() {
   socket.on('shotUpdate', receiveShot);
   socket.on('left', removeUser);
   socket.on('addBall', reciveBall);
+  socket.on('ballHit', handleBall);
 
   document.body.addEventListener('keydown', keyDownHandler);
   document.body.addEventListener('keyup', keyUpHandler);
@@ -298,6 +299,10 @@ var removeUser = function removeUser(data) {
   if (squares[data.hash]) {
     delete squares[data.hash];
   }
+};
+
+var handleBall = function handleBall(data){
+    balls.splice(data, 1);
 };
 
 var setUser = function setUser(data) {
