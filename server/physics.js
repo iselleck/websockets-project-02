@@ -1,8 +1,13 @@
 // our socket code for physics to send updates back
 const sockets = require('./sockets.js');
+const Ball = require('./classes/Ball.js');
 
 let charList = {}; // list of characters
 const shots = []; // array of shots to handle
+const balls = [];
+
+const ballDirections = [{x: 1, y: 0}, {x: 1, y: 1}, {x: 0, y: 1}, {x: -1, y: 1}, {x: -1, y: 0}, {x: -1, y: -1}, {x: 0, y: -1}, {x: 1, y: -1} 
+];
 
 // box collision check between two rectangles
 // of a set width/height
@@ -71,6 +76,14 @@ const checkShots = () => {
   }
 };
 
+const addBall = () => {
+  const createdAt = new Date();
+  let directNum = Math.floor(Math.random() * (7 - 0));
+  const newBall = new Ball(createdAt.getTime());
+  newBall.destX = ballDirections[directNum].x;
+  newBall.destY = ballDirections[directNum].y;
+ balls[createdAt] = newBall;
+};
 
 const updateShot = (shot) => {
     shots[shot.created] = shot; 
@@ -99,6 +112,11 @@ const addShot = (shot) => {
 setInterval(() => {
   checkShots();
 }, 20);
+
+setInterval(() => {
+  addBall();
+  console.log(balls);
+}, 5000);
 
 module.exports.setCharacterList = setCharacterList;
 module.exports.setCharacter = setCharacter;
