@@ -30,8 +30,8 @@ const handleShot = (userHash) => {
   io.sockets.in('room1').emit('shotHit', userHash);
 };
 
-const emitBalls = (balls) => {
-    io.sockets.in('room1').emit('addBall', balls);
+const emitBalls = (ball) => {
+    io.sockets.in('room1').emit('addBall', ball);
 };
 
 // function to setup our socket server
@@ -160,3 +160,4 @@ const setupSockets = (ioServer) => {
 
 module.exports.setupSockets = setupSockets;
 module.exports.handleShot = handleShot;
+module.exports.emitBalls = emitBalls;

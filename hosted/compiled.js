@@ -26,7 +26,8 @@ var redraw = function redraw(time) {
   ctx.clearRect(0, 0, 500, 500);
 
   var keys = Object.keys(squares);
-
+  var ballKeys = Object.keys(balls);
+    
   for (var i = 0; i < keys.length; i++) {
 
     var square = squares[keys[i]];
@@ -61,6 +62,23 @@ var redraw = function redraw(time) {
       ctx.fill();
       ctx.closePath();
   }
+    if(ballKeys.length > 0){
+    for(var b = 0; b < ballKeys.length; b++){
+        var ball = balls[ballKeys[b]];
+        
+        ball.x += ball.destX;
+        ball.y += ball.destY;
+        
+      ctx.beginPath();
+      ctx.arc(ball.x, ball.y, ball.radius, 0, 2*Math.PI);
+      ctx.fill();
+      ctx.closePath();
+        
+        socket.emit('updateBallPos', ball);
+    }
+    }
+    
+    
 
   for (var _i = 0; _i < shots.length; _i++) {
     var shot = shots[_i];
@@ -101,6 +119,7 @@ var animationFrame = void 0;
  var angle = 3 * Math.PI / 180;
 
 var squares = {};
+var balls ={};
 var shots = [];
 
 var keyDownHandler = function keyDownHandler(e) {
@@ -163,6 +182,7 @@ var init = function init() {
   socket.on('shotHit', playerDeath);
   socket.on('shotUpdate', receiveShot);
   socket.on('left', removeUser);
+  socket.on('addBall', reciveBall);
 
   document.body.addEventListener('keydown', keyDownHandler);
   document.body.addEventListener('keyup', keyUpHandler);
@@ -213,6 +233,11 @@ var setUser = function setUser(data) {
 
 var receiveShot = function receiveShot(data) {
   shots.push(data);
+};
+
+var reciveBall = function reciveBall(data) {
+  var createdAt = data.createdAt;
+  balls[createdAt] = data;  
 };
 
 var sendShot = function sendShot() {

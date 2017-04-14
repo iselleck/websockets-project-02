@@ -83,6 +83,7 @@ const addBall = () => {
   newBall.destX = ballDirections[directNum].x;
   newBall.destY = ballDirections[directNum].y;
  balls[createdAt] = newBall;
+ sockets.emitBalls(newBall);
 };
 
 const updateShot = (shot) => {
@@ -115,7 +116,6 @@ setInterval(() => {
 
 setInterval(() => {
   addBall();
-  //console.log(balls);
 }, 5000);
 
 
