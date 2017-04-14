@@ -80,6 +80,10 @@ const setupSockets = (ioServer) => {
           const shot = data;
           physics.removeShot(shot);
       });
+      
+      socket.on('updateBallPos', (data) => {
+          physics.upBall(data);
+      });
 
     // when this user sends an attack request
     socket.on('shot', (data) => {

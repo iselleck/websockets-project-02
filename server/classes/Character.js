@@ -14,13 +14,20 @@ class Character {
     this.width = 20; // width of character
     this.alpha = 0; // lerp amount (from prev to dest, 0 to 1)
     this.direction = 0; // direction character is facing
-    this.frame = 0; // frame in animation character is on
-    this.frameCount = 0; // how many frames since last draw
     this.moveLeft = false; // if character is moving left
     this.moveRight = false; // if character is moving right
     this.moveDown = false; // if character is moving down
     this.moveUp = false; // if character is moving up
     this.canMove = true;
+    this.isthrusting = false; // check if moving forward
+    this.thrust = 0.1;
+    this.turnSpeed = 0.001;
+    this.angle = 0;
+    this.velX = 0; //velocity x
+    this.velY = 0; // velocity y
+    this.pointLength = 30;
+    this.px = 0;
+    this.py = 0;
   }
 }
 

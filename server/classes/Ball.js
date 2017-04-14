@@ -15,6 +15,11 @@ class Ball {
     this.direction = 0; // direction character is facing
     this.sAngle = 0; // start angle
     this.eAngle = 2*Math.PI; // end angle 
+    this.canBounce = false; // only applies if type bounce 
+    this.numBounce = 0; //int to change if i want to alter num of bounces 
+    this.type = 'normal'; // type of ball it is 
+    this.color = '#000';
+    this.canWrap = false;
   }
 }
 

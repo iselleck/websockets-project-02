@@ -41,8 +41,8 @@ var redraw = function redraw(time) {
       ctx.filter = "hue-rotate(40deg)";
     }
 
-      square.x = square.destX;
-    square.y = square.destY;
+//      square.x = square.destX;
+//    square.y = square.destY;
 
     // if we are mid animation or moving in any direction
     if (square.frame > 0 || square.moveUp || square.moveDown || square.moveRight || square.moveLeft) {
@@ -57,10 +57,22 @@ var redraw = function redraw(time) {
       }
     }
       
+ 
+      
       ctx.beginPath();
       ctx.arc(square.x, square.y, square.width, 0, 2*Math.PI);
       ctx.fill();
       ctx.closePath();
+      
+      
+      ctx.beginPath();
+      ctx.moveTo(square.x, square.y);
+      ctx.lineTo(square.px, square.py);
+      ctx.lineWidth = 20; 
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+      
   }
     if(ballKeys.length > 0){
     for(var b = 0; b < ballKeys.length; b++){
@@ -68,13 +80,58 @@ var redraw = function redraw(time) {
         
         ball.x += ball.destX;
         ball.y += ball.destY;
-        
+    
+      ctx.save();   
       ctx.beginPath();
       ctx.arc(ball.x, ball.y, ball.radius, 0, 2*Math.PI);
+      ctx.fillStyle = ball.color;
       ctx.fill();
       ctx.closePath();
+      ctx.restore();    
         
-        socket.emit('updateBallPos', ball);
+        if(ball.x > canvas.width || ball.x < 0 || ball.y > canvas.height || ball.y < 0){
+           switch(ball.type) {
+                case 'normal':
+                    socket.emit('removeBall', ball);
+                    delete balls[ball.createdAt];
+                    break;
+               case 'bounce':
+                   if(ball.canBounce){
+                    ball.destX = -ball.destX;
+                    ball.destY = -ball.destY;
+                       ball.canBounce = false;
+                       } else {
+                        socket.emit('removeBall', ball);
+                        delete balls[ball.createdAt];
+                       }
+                    break;
+               case 'wrap':
+                   if(ball.canWrap){ 
+                    if(ball.x > canvas.width){
+                       ball.x = 0;
+                       ball.canWrap = false;
+                   } else if (ball.x < 0) {
+                       ball.x = canvas.width;
+                       ball.canWrap = false;
+                   } else if (ball.y > canvas.height) {
+                       ball.y = 0;
+                       ball.canWrap = false;
+                   } else if (ball.y < 0) {
+                       ball.y = canvas.height;
+                       ball.canWrap = false;
+                   }
+                   } else {
+                        socket.emit('removeBall', ball);
+                    delete balls[ball.createdAt];
+                   }
+                    break;
+               default:
+                   socket.emit('removeBall', ball);
+                    delete balls[ball.createdAt];
+           }
+        }
+        
+          socket.emit('updateBallPos', ball);
     }
     }
     
@@ -206,8 +263,11 @@ var update = function update(data) {
   }
 
   var square = squares[data.hash];
+
   square.prevX = data.prevX;
   square.prevY = data.prevY;
+  square.x = data.x;
+  square.y = data.y;
   square.destX = data.destX;
   square.destY = data.destY;
   square.direction = data.direction;
@@ -216,6 +276,13 @@ var update = function update(data) {
   square.moveDown = data.moveDown;
   square.moveUp = data.moveUp;
   square.alpha = 0.05;
+  square.angle = data.angle;
+  square.velY = data.velY;
+  square.velX = data.velX;
+  square.px = data.px;
+  square.py = data.py;
+  square.turnSpeed = data.turnSpeed;
+  square.thrust = data.thrust;
 
 };
 
@@ -272,42 +339,65 @@ var playerDeath = function playerDeath(data) {
 
 var updatePosition = function updatePosition() {
   var square = squares[hash];
-    
-  square.prevX = square.x;
-  square.prevY = square.y;
+  //  console.log(square.x + '    ' + square.y);
+//  square.prevX = square.x;
+//  square.prevY = square.y;
 
+    
+    
   // move counter clockwise
   if (square.moveLeft && square.destX > 0 && !square.moveRight) {
-     square.destX -= 8*Math.cos(angle);
-      square.destY -= 8*Math.sin(angle);
-      angle -= 3 * Math.PI / 180;
+      
+      square.angle += square.turnSpeed * -1;
+//     square.destX -= 8*Math.cos(angle);
+//      square.destY -= 8*Math.sin(angle);
+//      angle -= 3 * Math.PI / 180;
   }
     // move clockwise 
   if (square.moveRight && square.destX < 500 && !square.moveLeft) {
-     square.destX += 8*Math.cos(angle);
-      square.destY += 8*Math.sin(angle);
-      angle += 3 * Math.PI / 180;
+      square.angle += square.turnSpeed * 1;
+//     square.destX += 8*Math.cos(angle);
+//      square.destY += 8*Math.sin(angle);
+//      angle += 3 * Math.PI / 180;
   }
     
-    if (square.moveUp && square.moveLeft) square.direction = directions.UPLEFT;
+    var radians = square.angle/Math.PI*180;
+    console.log(radians);
+//    
+//    if (square.moveUp && square.moveLeft) square.direction = directions.UPLEFT;
+//
+//  if (square.moveUp && square.moveRight) square.direction = directions.UPRIGHT;
+//
+//  if (square.moveDown && square.moveLeft) square.direction = directions.DOWNLEFT;
+//
+//  if (square.moveDown && square.moveRight) square.direction = directions.DOWNRIGHT;
+//
+//  if (square.moveDown && !(square.moveRight || square.moveLeft)) square.direction = directions.DOWN;
+//      
+      // add thrust if up arrow or w 
+  if (square.moveUp){ 
+      square.direction = directions.UP;
+      square.velX += Math.cos(radians) * square.thrust;
+      square.velY += Math.sin(radians) * square.thrust;
+  }
 
-  if (square.moveUp && square.moveRight) square.direction = directions.UPRIGHT;
-
-  if (square.moveDown && square.moveLeft) square.direction = directions.DOWNLEFT;
-
-  if (square.moveDown && square.moveRight) square.direction = directions.DOWNRIGHT;
-
-  if (square.moveDown && !(square.moveRight || square.moveLeft)) square.direction = directions.DOWN;
-
-  if (square.moveUp && !(square.moveRight || square.moveLeft)) square.direction = directions.UP;
-
-  if (square.moveLeft && !(square.moveUp || square.moveDown)) square.direction = directions.LEFT;
-
-  if (square.moveRight && !(square.moveUp || square.moveDown)) square.direction = directions.RIGHT;
+//  if (square.moveLeft && !(square.moveUp || square.moveDown)) square.direction = directions.LEFT;
+//
+//  if (square.moveRight && !(square.moveUp || square.moveDown)) square.direction = directions.RIGHT;
 
     
-    //console.log('Pos X: ' + square.x + ' Pos Y: ' + square.y + ' Angle: ' + angle);
-
+    square.px = square.x - square.pointLength * Math.cos(radians);
+    square.py = square.y - square.pointLength * Math.sin(radians);
+    
+  //  console.log('Pos X: ' + square.x + ' Pos Y: ' + square.y + ' Angle: ' + angle);
+      //friction
+      square.velX *= 0.98;
+      square.velY *= 0.98;
+    
+      
+      square.x -= square.velX;
+      square.y -= square.velY;
+      
   square.alpha = 0.05;
 
   socket.emit('movementUpdate', square);

@@ -9,6 +9,8 @@ let balls = {};
 const ballDirections = [{x: 1, y: 0}, {x: 1, y: 1}, {x: 0, y: 1}, {x: -1, y: 1}, {x: -1, y: 0}, {x: -1, y: -1}, {x: 0, y: -1}, {x: 1, y: -1} 
 ];
 
+const ballTypes = ['normal', 'bounce', 'wrap'];
+
 // box collision check between two rectangles
 // of a set width/height
 const checkCollisions = (circ1, circ2, radius) => {
@@ -79,15 +81,39 @@ const checkShots = () => {
 const addBall = () => {
   const createdAt = new Date();
   let directNum = Math.floor(Math.random() * (7 - 0));
+  let typeNum = Math.floor(Math.random() * (3 - 0));
   const newBall = new Ball(createdAt.getTime());
   newBall.destX = ballDirections[directNum].x;
   newBall.destY = ballDirections[directNum].y;
+  newBall.type = ballTypes[typeNum]; 
+    
+    switch(newBall.type) {
+                case 'normal':
+                    newBall.color = "#000";
+                    break;
+               case 'bounce':
+                    newBall.color = "#00F";
+                    newBall.canBounce = true;
+                    break;
+               case 'wrap':
+                    newBall.color = "#0F0";
+                    newBall.canWrap = true;
+                    break;
+               default:
+                   newBall.color = "#000";
+           }
+    
  balls[createdAt] = newBall;
  sockets.emitBalls(newBall);
 };
 
 const updateShot = (shot) => {
     shots[shot.created] = shot; 
+};
+
+const upBall = (ball) => {
+    balls[ball.created] = ball; 
+   // console.log(balls);
 };
 
 const removeShot = (shot) => {
@@ -125,3 +151,4 @@ module.exports.setCharacter = setCharacter;
 module.exports.addShot = addShot;
 module.exports.updateShot = updateShot;
 module.exports.removeShot = removeShot;
+module.exports.upBall = upBall;
