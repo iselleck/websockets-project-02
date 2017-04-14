@@ -22,64 +22,64 @@ var redraw = function redraw(time) {
 
   ctx.clearRect(0, 0, 800, 800);
 
-  var keys = Object.keys(squares);
+  var keys = Object.keys(players);
   
     
   for (var i = 0; i < keys.length; i++) {
     
      
-    var square = squares[keys[i]];
+    var player = players[keys[i]];
 
     //if alpha less than 1, increase it by 0.01
-      console.log(square.playable);
-       if(square.playable == true){
-           square.alpha = 1;
+      
+       if(player.playable == true){
+           player.alpha = 1;
        }
 
-    if (square.hash === hash) {
+    if (player.hash === hash) {
       ctx.filter = "none";
     } else {
       ctx.filter = "hue-rotate(40deg)";
     }
 
-//      square.x = square.destX;
-//    square.y = square.destY;
+//      player.x = player.destX;
+//    player.y = player.destY;
 
     // if we are mid animation or moving in any direction
-    if (square.frame > 0 || square.moveUp || square.moveDown || square.moveRight || square.moveLeft) {
-      square.frameCount++;
+    if (player.frame > 0 || player.moveUp || player.moveDown || player.moveRight || player.moveLeft) {
+      player.frameCount++;
 
-      if (square.frameCount % 8 === 0) {
-        if (square.frame < 7) {
-          square.frame++;
+      if (player.frameCount % 8 === 0) {
+        if (player.frame < 7) {
+          player.frame++;
         } else {
-          square.frame = 0;
+          player.frame = 0;
         }
       }
     }
       
                 
-                    if(square.x > canvas.width){
-                       square.x = 0;
-                   } else if (square.x < 0) {
-                       square.x = canvas.width;
-                   } else if (square.y > canvas.height) {
-                       square.y = 0;
-                   } else if (square.y < 0) {
-                       square.y = canvas.height;
+                    if(player.x > canvas.width){
+                       player.x = 0;
+                   } else if (player.x < 0) {
+                       player.x = canvas.width;
+                   } else if (player.y > canvas.height) {
+                       player.y = 0;
+                   } else if (player.y < 0) {
+                       player.y = canvas.height;
                    }
  
       ctx.save();
-      ctx.globalAlpha = square.alpha;
+      ctx.globalAlpha = player.alpha;
       ctx.beginPath();
-      ctx.arc(square.x, square.y, square.radius, 0, 2*Math.PI);
+      ctx.arc(player.x, player.y, player.radius, 0, 2*Math.PI);
       ctx.fill();
       ctx.closePath();
       
       
       ctx.beginPath();
-      ctx.moveTo(square.x, square.y);
-      ctx.lineTo(square.px, square.py);
+      ctx.moveTo(player.x, player.y);
+      ctx.lineTo(player.px, player.py);
       ctx.lineWidth = 20; 
       ctx.closePath();
       ctx.fill();
@@ -196,46 +196,46 @@ var hash = void 0;
 var animationFrame = void 0;
  var angle = 3 * Math.PI / 180;
 
-var squares = {};
+var players = {};
 var balls = [];
 var shots = [];
 
 var keyDownHandler = function keyDownHandler(e) {
   var keyPressed = e.which;
-  var square = squares[hash];
+  var player = players[hash];
 
   // W OR UP
-    if(square.playable){
+    if(player.playable){
   if (keyPressed === 87 || keyPressed === 38) {
-    square.moveUp = true;
+    player.moveUp = true;
   }
   // A OR LEFT
   else if (keyPressed === 65 || keyPressed === 37) {
-      square.moveLeft = true;
+      player.moveLeft = true;
     }
       // D OR RIGHT
       else if (keyPressed === 68 || keyPressed === 39) {
-          square.moveRight = true;
+          player.moveRight = true;
         }
     }
 };
 
 var keyUpHandler = function keyUpHandler(e) {
   var keyPressed = e.which;
-  var square = squares[hash];
+  var player = players[hash];
 
   // W OR UP
-    if(square.playable){
+    if(player.playable){
   if (keyPressed === 87 || keyPressed === 38) {
-    square.moveUp = false;
+    player.moveUp = false;
   }
   // A OR LEFT
   else if (keyPressed === 65 || keyPressed === 37) {
-      square.moveLeft = false;
+      player.moveLeft = false;
     }
       // D OR RIGHT
       else if (keyPressed === 68 || keyPressed === 39) {
-          square.moveRight = false;
+          player.moveRight = false;
         } else if (keyPressed === 32) {
           sendShot();
         } 
@@ -267,8 +267,8 @@ window.onload = init;
 'use strict';
 
 var update = function update(data) {
-  if (!squares[data.hash]) {
-    squares[data.hash] = data;
+  if (!players[data.hash]) {
+    players[data.hash] = data;
     return;
   }
 
@@ -276,37 +276,37 @@ var update = function update(data) {
     return;
   }
 
-  if (squares[data.hash].lastUpdate >= data.lastUpdate) {
+  if (players[data.hash].lastUpdate >= data.lastUpdate) {
     return;
   }
 
-  var square = squares[data.hash];
+  var player = players[data.hash];
 
-  square.prevX = data.prevX;
-  square.prevY = data.prevY;
-  square.x = data.x;
-  square.y = data.y;
-  square.destX = data.destX;
-  square.destY = data.destY;
-  square.direction = data.direction;
-  square.moveLeft = data.moveLeft;
-  square.moveRight = data.moveRight;
-  square.moveDown = data.moveDown;
-  square.moveUp = data.moveUp;
-  square.alpha = 0;
-  square.angle = data.angle;
-  square.velY = data.velY;
-  square.velX = data.velX;
-  square.px = data.px;
-  square.py = data.py;
-  square.turnSpeed = data.turnSpeed;
-  square.thrust = data.thrust;
+  player.prevX = data.prevX;
+  player.prevY = data.prevY;
+  player.x = data.x;
+  player.y = data.y;
+  player.destX = data.destX;
+  player.destY = data.destY;
+  player.direction = data.direction;
+  player.moveLeft = data.moveLeft;
+  player.moveRight = data.moveRight;
+  player.moveDown = data.moveDown;
+  player.moveUp = data.moveUp;
+  player.alpha = 0;
+  player.angle = data.angle;
+  player.velY = data.velY;
+  player.velX = data.velX;
+  player.px = data.px;
+  player.py = data.py;
+  player.turnSpeed = data.turnSpeed;
+  player.thrust = data.thrust;
 
 };
 
 var removeUser = function removeUser(data) {
-  if (squares[data.hash]) {
-    delete squares[data.hash];
+  if (players[data.hash]) {
+    delete players[data.hash];
   }
 };
 
@@ -320,7 +320,7 @@ var handleBall = function handleBall(dShot, ball){
 
 var setUser = function setUser(data) {
   hash = data.hash;
-  squares[hash] = data;
+  players[hash] = data;
   requestAnimationFrame(redraw);
 };
 
@@ -334,18 +334,18 @@ var reciveBall = function reciveBall(data) {
 
     
     balls.push(data);
-        console.log(balls.length);
+        
 };
 
 var sendShot = function sendShot() {
-  var square = squares[hash];
+  var player = players[hash];
     var createdAt = new Date(); 
-     var radians = square.angle/Math.PI*180;
+     var radians = player.angle/Math.PI*180;
     
   var shot = {
     hash: hash,
-    x: square.x,
-    y: square.y,
+    x: player.x,
+    y: player.y,
     radian: radians,
     radius: 8,
     speed: 5,
@@ -358,14 +358,14 @@ var sendShot = function sendShot() {
 };
 
 var playerDeath = function playerDeath(data) {
- var square = squares[hash];
-    square.alpha = 0;
-    square.playable = false;
-    square.x = Math.floor(Math.random() * (canvas.width - 0) + 1);
-    square.y = Math.floor(Math.random() * (canvas.height - 0) + 1);
+ var player = players[hash];
+    player.alpha = 0;
+    player.playable = false;
+    player.x = Math.floor(Math.random() * (canvas.width - 0) + 1);
+    player.y = Math.floor(Math.random() * (canvas.height - 0) + 1);
     
     setInterval(() => {
-        canPlay(square);
+        canPlay(player);
     }, 5000);
 };
 
@@ -374,44 +374,43 @@ var canPlay = function canPlay(player) {
 };
 
 var updatePosition = function updatePosition() {
-  var square = squares[hash];
+  var player = players[hash];
     
     
   // turn counter clockwise
-    if(square.playable){
-  if (square.moveLeft && square.destX > 0 && !square.moveRight) {
-      square.angle += square.turnSpeed * -1;
+    if(player.playable){
+  if (player.moveLeft && player.destX > 0 && !player.moveRight) {
+      player.angle += player.turnSpeed * -1;
   }
     
     // turn clockwise 
-  if (square.moveRight && square.destX < 500 && !square.moveLeft) {
-      square.angle += square.turnSpeed * 1;
+  if (player.moveRight && player.destX < 500 && !player.moveLeft) {
+      player.angle += player.turnSpeed * 1;
   }
     
-    var radians = square.angle/Math.PI*180;
-  //  console.log(radians);
+    var radians = player.angle/Math.PI*180;
+
      
       // add thrust if up arrow or w 
-  if (square.moveUp){ 
-      square.direction = directions.UP;
-      square.velX += Math.cos(radians) * square.thrust;
-      square.velY += Math.sin(radians) * square.thrust;
+  if (player.moveUp){ 
+      player.direction = directions.UP;
+      player.velX += Math.cos(radians) * player.thrust;
+      player.velY += Math.sin(radians) * player.thrust;
   }
     
     // line heading 
-    square.px = square.x - square.pointLength * Math.cos(radians);
-    square.py = square.y - square.pointLength * Math.sin(radians);
+    player.px = player.x - player.pointLength * Math.cos(radians);
+    player.py = player.y - player.pointLength * Math.sin(radians);
     
-  //  console.log('Pos X: ' + square.x + ' Pos Y: ' + square.y + ' Angle: ' + angle);
       //friction
-      square.velX *= 0.98;
-      square.velY *= 0.98;
+      player.velX *= 0.98;
+      player.velY *= 0.98;
     
       // apply velocity 
-      square.x -= square.velX;
-      square.y -= square.velY;
+      player.x -= player.velX;
+      player.y -= player.velY;
 }
   
 
-  socket.emit('movementUpdate', square);
+  socket.emit('movementUpdate', player);
 };
