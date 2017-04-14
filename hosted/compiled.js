@@ -302,7 +302,7 @@ var removeUser = function removeUser(data) {
 };
 
 var handleBall = function handleBall(data){
-    balls.splice(data, 1);
+    shots.splice(data, 1);
 };
 
 var setUser = function setUser(data) {
