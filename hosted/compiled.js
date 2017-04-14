@@ -57,6 +57,16 @@ var redraw = function redraw(time) {
       }
     }
       
+                
+                    if(square.x > canvas.width){
+                       square.x = 0;
+                   } else if (square.x < 0) {
+                       square.x = canvas.width;
+                   } else if (square.y > canvas.height) {
+                       square.y = 0;
+                   } else if (square.y < 0) {
+                       square.y = canvas.height;
+                   }
  
       
       ctx.beginPath();

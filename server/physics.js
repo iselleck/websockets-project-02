@@ -68,7 +68,7 @@ const checkShots = () => {
           // ask sockets to notify users which character was hit
           sockets.handleShot(char1.hash);
           // kill that character and remove from our user list
-          delete charList[char1.hash];
+//          delete charList[char1.hash];
         } else {
           // if not a hit
          // console.log('miss');
