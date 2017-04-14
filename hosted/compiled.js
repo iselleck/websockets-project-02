@@ -26,7 +26,7 @@ var redraw = function redraw(time) {
   ctx.clearRect(0, 0, 500, 500);
 
   var keys = Object.keys(squares);
-  var ballKeys = Object.keys(balls);
+  
     
   for (var i = 0; i < keys.length; i++) {
 
@@ -74,9 +74,9 @@ var redraw = function redraw(time) {
       ctx.stroke();
       
   }
-    if(ballKeys.length > 0){
-    for(var b = 0; b < ballKeys.length; b++){
-        var ball = balls[ballKeys[b]];
+    if(balls.length > 0){
+    for(var b = 0; b < balls.length; b++){
+        var ball = balls[b];
         
         ball.x += ball.destX;
         ball.y += ball.destY;
@@ -92,8 +92,9 @@ var redraw = function redraw(time) {
         if(ball.x > canvas.width || ball.x < 0 || ball.y > canvas.height || ball.y < 0){
            switch(ball.type) {
                 case 'normal':
-                    socket.emit('removeBall', ball);
-                    delete balls[ball.createdAt];
+                    socket.emit('removeBall', b);
+                    balls.splice(b, 1);
+                   b--;
                     break;
                case 'bounce':
                    if(ball.canBounce){
@@ -101,9 +102,10 @@ var redraw = function redraw(time) {
                     ball.destY = -ball.destY;
                        ball.canBounce = false;
                        } else {
-                        socket.emit('removeBall', ball);
-                        delete balls[ball.createdAt];
+                       socket.emit('removeBall', b);
+                    balls.splice(b, 1);
                        }
+                    b--;
                     break;
                case 'wrap':
                    if(ball.canWrap){ 
@@ -121,13 +123,15 @@ var redraw = function redraw(time) {
                        ball.canWrap = false;
                    }
                    } else {
-                        socket.emit('removeBall', ball);
-                    delete balls[ball.createdAt];
+                        socket.emit('removeBall', b);
+                    balls.splice(b, 1);
                    }
+                    b--;
                     break;
                default:
-                   socket.emit('removeBall', ball);
-                    delete balls[ball.createdAt];
+                  socket.emit('removeBall', b);
+                    balls.splice(b, 1);
+                    b--;
            }
         }
         
@@ -179,7 +183,7 @@ var animationFrame = void 0;
  var angle = 3 * Math.PI / 180;
 
 var squares = {};
-var balls ={};
+var balls = [];
 var shots = [];
 
 var keyDownHandler = function keyDownHandler(e) {
@@ -306,8 +310,12 @@ var receiveShot = function receiveShot(data) {
 };
 
 var reciveBall = function reciveBall(data) {
-  var createdAt = data.createdAt;
-  balls[createdAt] = data;  
+//  var createdAt = data.createdAt;
+//  balls[createdAt] = data;  
+
+    
+    balls.push(data);
+        console.log(balls.length);
 };
 
 var sendShot = function sendShot() {
@@ -366,7 +374,7 @@ var updatePosition = function updatePosition() {
   }
     
     var radians = square.angle/Math.PI*180;
-    console.log(radians);
+  //  console.log(radians);
 //    
 //    if (square.moveUp && square.moveLeft) square.direction = directions.UPLEFT;
 //

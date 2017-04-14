@@ -47,16 +47,9 @@ const checkShots = () => {
     //console.log(shots.length);
     
      let keys = Object.keys(charList);
-    let ballKeys = Object.keys(balls);
-    let ballList = balls;
     let characters = charList;
     
-    
-    console.log(ballKeys.length);
-        for(b = 0; b < ballKeys.length; b++){
-            const ball1 = ballList[ballKeys[b]];
-           // console.log(ball1.x);
-        }
+   // console.log(ballList.length);
     
   if (shots.length > 0) {
     // get all characters
@@ -66,7 +59,7 @@ const checkShots = () => {
       // for each character
       for (let k = 0; k < keys.length; k++) {
         const char1 = characters[keys[k]];
-
+        console.log(char1.x);
         // call to see if the attack and character hit
         const hit = checkShotCollision(char1, shots[i]);
 
@@ -81,9 +74,8 @@ const checkShots = () => {
         }
       }
       
-        for(b = 0; b < ballKeys.length; b++){
-            const ball1 = ballList[ballKeys[b]];
-            console.log(ball1.x);
+        for(b = 0; b < balls.length; b++){
+            const ball1 = balls[b];
            const hit = checkCollisions(ball1, shots[i], shots[i].radius);
         }
        
@@ -116,17 +108,19 @@ const addBall = () => {
                    newBall.color = "#000";
            }
     
- balls[createdAt] = newBall;
+ //balls[createdAt] = newBall;
+    balls.push(newBall);
  sockets.emitBalls(newBall);
 };
 
 const updateShot = (shot) => {
     shots[shot.created] = shot; 
+ //   console.log(shots.length);
 };
 
 const upBall = (ball) => {
-    balls[ball.created] = ball; 
-   // console.log(balls);
+    balls[ball.createdAt] = ball; 
+  // console.log(balls.length);
 };
 
 const removeShot = (shot) => {
@@ -134,7 +128,8 @@ const removeShot = (shot) => {
 };
 
 const removeBall = (ball) => {
-  delete balls[ball.createdAt];  
+  balls.splice(ball, 1);
+  //  console.log(balls.length);
 };
 
 // update our entire character list
@@ -159,6 +154,7 @@ setInterval(() => {
 
 setInterval(() => {
   addBall();
+    console.log(balls.length);
 }, 5000);
 
 
