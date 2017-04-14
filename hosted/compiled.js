@@ -80,6 +80,7 @@ var redraw = function redraw(time) {
         
         ball.x += ball.destX;
         ball.y += ball.destY;
+        ball.index = b;
     
       ctx.save();   
       ctx.beginPath();
@@ -144,7 +145,7 @@ var redraw = function redraw(time) {
   for (var _i = 0; _i < shots.length; _i++) {
     var shot = shots[_i];
       
-      
+      shot.index = _i;
       
       shot.x -=  Math.cos(shot.radian) * shot.speed;
       shot.y -=  Math.sin(shot.radian) * shot.speed;
@@ -331,7 +332,8 @@ var sendShot = function sendShot() {
     radius: 8,
     speed: 5,
     created: createdAt.getTime(),
-    frames: 0
+    frames: 0,
+    index: 0
   };
 
   socket.emit('shot', shot);
@@ -351,53 +353,29 @@ var playerDeath = function playerDeath(data) {
 
 var updatePosition = function updatePosition() {
   var square = squares[hash];
-  //  console.log(square.x + '    ' + square.y);
-//  square.prevX = square.x;
-//  square.prevY = square.y;
-
     
     
-  // move counter clockwise
+  // turn counter clockwise
   if (square.moveLeft && square.destX > 0 && !square.moveRight) {
-      
       square.angle += square.turnSpeed * -1;
-//     square.destX -= 8*Math.cos(angle);
-//      square.destY -= 8*Math.sin(angle);
-//      angle -= 3 * Math.PI / 180;
   }
-    // move clockwise 
+    
+    // turn clockwise 
   if (square.moveRight && square.destX < 500 && !square.moveLeft) {
       square.angle += square.turnSpeed * 1;
-//     square.destX += 8*Math.cos(angle);
-//      square.destY += 8*Math.sin(angle);
-//      angle += 3 * Math.PI / 180;
   }
     
     var radians = square.angle/Math.PI*180;
   //  console.log(radians);
-//    
-//    if (square.moveUp && square.moveLeft) square.direction = directions.UPLEFT;
-//
-//  if (square.moveUp && square.moveRight) square.direction = directions.UPRIGHT;
-//
-//  if (square.moveDown && square.moveLeft) square.direction = directions.DOWNLEFT;
-//
-//  if (square.moveDown && square.moveRight) square.direction = directions.DOWNRIGHT;
-//
-//  if (square.moveDown && !(square.moveRight || square.moveLeft)) square.direction = directions.DOWN;
-//      
+     
       // add thrust if up arrow or w 
   if (square.moveUp){ 
       square.direction = directions.UP;
       square.velX += Math.cos(radians) * square.thrust;
       square.velY += Math.sin(radians) * square.thrust;
   }
-
-//  if (square.moveLeft && !(square.moveUp || square.moveDown)) square.direction = directions.LEFT;
-//
-//  if (square.moveRight && !(square.moveUp || square.moveDown)) square.direction = directions.RIGHT;
-
     
+    // line heading 
     square.px = square.x - square.pointLength * Math.cos(radians);
     square.py = square.y - square.pointLength * Math.sin(radians);
     
@@ -406,7 +384,7 @@ var updatePosition = function updatePosition() {
       square.velX *= 0.98;
       square.velY *= 0.98;
     
-      
+      // apply velocity 
       square.x -= square.velX;
       square.y -= square.velY;
       

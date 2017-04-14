@@ -20,6 +20,7 @@ class Ball {
     this.type = 'normal'; // type of ball it is 
     this.color = '#000';
     this.canWrap = false;
+    this.index = 0;
   }
 }
 

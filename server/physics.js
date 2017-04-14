@@ -3,8 +3,8 @@ const sockets = require('./sockets.js');
 const Ball = require('./classes/Ball.js');
 
 let charList = {}; // list of characters
-const shots = []; // array of shots to handle
-const balls = [];
+let shots = []; // array of shots to handle
+let balls = [];
 
 const ballDirections = [{x: 1, y: 0}, {x: 1, y: 1}, {x: 0, y: 1}, {x: -1, y: 1}, {x: -1, y: 0}, {x: -1, y: -1}, {x: 0, y: -1}, {x: 1, y: -1} 
 ];
@@ -18,7 +18,7 @@ const checkCollisions = (circ1, circ2, radius) => {
     const distY = (circ1.y + circ1.radius) - (circ2.y - circ2.radius);
     const distance = Math.sqrt(distX * distX + distY * distY);
     
-    
+    console.log(distance);
     if (distance < circ1.radius + circ2.radius) {
         console.log('u\'s hit dawg');
     return true; // is colliding
@@ -57,9 +57,10 @@ const checkShots = () => {
     // for each attack
     for (let i = 0; i < shots.length; i++) {
       // for each character
+        //console.log(shots[i].x);
       for (let k = 0; k < keys.length; k++) {
         const char1 = characters[keys[k]];
-        console.log(char1.x);
+        //console.log(char1.x);
         // call to see if the attack and character hit
         const hit = checkShotCollision(char1, shots[i]);
 
@@ -76,6 +77,7 @@ const checkShots = () => {
       
         for(b = 0; b < balls.length; b++){
             const ball1 = balls[b];
+//            console.log(ball1.x);
            const hit = checkCollisions(ball1, shots[i], shots[i].radius);
         }
        
@@ -114,12 +116,12 @@ const addBall = () => {
 };
 
 const updateShot = (shot) => {
-    shots[shot.created] = shot; 
+    shots[shot.index] = shot; 
  //   console.log(shots.length);
 };
 
 const upBall = (ball) => {
-    balls[ball.createdAt] = ball; 
+    balls[ball.index] = ball; 
   // console.log(balls.length);
 };
 
