@@ -81,7 +81,7 @@ const checkShots = () => {
            const hit = checkCollisions(ball1, shots[i], shots[i].radius);
             
             if(hit){
-                sockets.handleHitBall(i);
+                sockets.handleHitBall(i, b);
                 shots.splice(i, 1);
                 i--;
                 break;

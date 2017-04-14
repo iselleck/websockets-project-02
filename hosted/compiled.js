@@ -199,10 +199,6 @@ var keyDownHandler = function keyDownHandler(e) {
   else if (keyPressed === 65 || keyPressed === 37) {
       square.moveLeft = true;
     }
-    // S OR DOWN
-    else if (keyPressed === 83 || keyPressed === 40) {
-        square.moveDown = true;
-      }
       // D OR RIGHT
       else if (keyPressed === 68 || keyPressed === 39) {
           square.moveRight = true;
@@ -221,10 +217,6 @@ var keyUpHandler = function keyUpHandler(e) {
   else if (keyPressed === 65 || keyPressed === 37) {
       square.moveLeft = false;
     }
-    // S OR DOWN
-    else if (keyPressed === 83 || keyPressed === 40) {
-        square.moveDown = false;
-      }
       // D OR RIGHT
       else if (keyPressed === 68 || keyPressed === 39) {
           square.moveRight = false;
@@ -301,8 +293,11 @@ var removeUser = function removeUser(data) {
   }
 };
 
-var handleBall = function handleBall(data){
-    shots.splice(data, 1);
+var handleBall = function handleBall(dShot, ball){
+    shots.splice(dShot, 1);
+    
+    balls[ball].destX = -balls[ball].destX;
+    socket.emit('updateBallPos', balls[ball]);
 };
 
 var setUser = function setUser(data) {

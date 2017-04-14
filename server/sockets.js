@@ -34,8 +34,8 @@ const emitBalls = (ball) => {
     io.sockets.in('room1').emit('addBall', ball);
 };
 
-const handleHitBall = (ballIn) => {
-    io.sockets.in('room1').emit('ballHit', ballIn);
+const handleHitBall = (dShot, ball) => {
+    io.sockets.in('room1').emit('ballHit', dShot, ball);
 };
 
 // function to setup our socket server
