@@ -30,6 +30,10 @@ const handleShot = (userHash) => {
   io.sockets.in('room1').emit('shotHit', userHash);
 };
 
+const emitBalls = (balls) => {
+    io.sockets.in('room1').emit('addBall', balls);
+};
+
 // function to setup our socket server
 const setupSockets = (ioServer) => {
   // set our io server instance

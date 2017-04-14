@@ -4,7 +4,7 @@ const Ball = require('./classes/Ball.js');
 
 let charList = {}; // list of characters
 const shots = []; // array of shots to handle
-const balls = [];
+let balls = {};
 
 const ballDirections = [{x: 1, y: 0}, {x: 1, y: 1}, {x: 0, y: 1}, {x: -1, y: 1}, {x: -1, y: 0}, {x: -1, y: -1}, {x: 0, y: -1}, {x: 1, y: -1} 
 ];
@@ -115,8 +115,10 @@ setInterval(() => {
 
 setInterval(() => {
   addBall();
-  console.log(balls);
+  //console.log(balls);
 }, 5000);
+
+
 
 module.exports.setCharacterList = setCharacterList;
 module.exports.setCharacter = setCharacter;
