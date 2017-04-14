@@ -12,13 +12,13 @@ class Character {
     this.destY = this.y; // destination y location of character
     this.height = 100; // height of character
     this.radius = 20; // width of character
-    this.alpha = 0; // lerp amount (from prev to dest, 0 to 1)
+    this.alpha = 0; // transparency
     this.direction = 0; // direction character is facing
     this.moveLeft = false; // if character is moving left
     this.moveRight = false; // if character is moving right
     this.moveDown = false; // if character is moving down
     this.moveUp = false; // if character is moving up
-    this.canMove = true;
+    this.playable = true;
     this.isthrusting = false; // check if moving forward
     this.thrust = 0.1;
     this.turnSpeed = 0.001;

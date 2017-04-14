@@ -21,6 +21,7 @@ class Ball {
     this.color = '#000';
     this.canWrap = false;
     this.index = 0;
+    this.speed = 1;
   }
 }
 

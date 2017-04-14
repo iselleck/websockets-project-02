@@ -13,26 +13,36 @@
       }
       
       canvas {
-        margin: 5% 25%;
+        margin: 5% 2%;
         border: 1px solid black;
+        display: inline-block;
       }
       
       p {
-        margin-left: 12px;
+        margin-left: 10%;
+          margin-top: 55%;
         font-size: 1.2em;
-        width: 50%; 
+        width: 80%; 
       }
+        
+        #right-content {
+            display: inline-block;
+            width: 30%;
+            float: left;
+        }
       
       .hidden {
-        display: none;
+        display: inline;
       }
     </style>
     <script src="/socket.io/socket.io.js"></script>
 	<script src="/assets/compiled.js"> </script>
 </head>
 <body>
-    <canvas id="canvas" height="500" width="500">Please use an HTML 5 browser</canvas>
-    <img id="walk" class="hidden" src="/assets/walk.png" alt="walk spritesheet" />
-    <img id="slash" class="hidden" src="/assets/slash.png" alt="slash spritesheet" />
+      <div id="right-content">
+        <p>The point of this game is to try and avoid the circles <br/> You can turn with the left and right arrows or A and D <br /> Accelerate forward with W or the up arrow  <br />Shoot with the space bar with will change the direction of the balls and speed them up. <br/> If you are hit you'll respawn in 5 seconds</p>
+    </div>
+    <canvas id="canvas" height="800" width="800">Please use an HTML 5 browser</canvas>
+  
 </body>
 </html>

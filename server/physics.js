@@ -14,10 +14,11 @@ const ballTypes = ['normal', 'bounce', 'wrap'];
 // box collision check between two rectangles
 // of a set width/height
 const checkCollisions = (circ1, circ2) => {
-    const distX = (circ1.x + circ1.radius) - (circ2.x - circ2.radius);
-    const distY = (circ1.y + circ1.radius) - (circ2.y - circ2.radius);
+    const distX = circ1.x - circ2.x; 
+    const distY = circ1.y - circ2.y; 
+//    const distY = (circ1.y + circ1.radius) - (circ2.y - circ2.radius);
     const distance = Math.sqrt(distX * distX + distY * distY);
-    
+//     (circ1.x + circ1.radius) - (circ2.x - circ2.radius);
     console.log(distance);
     if (distance < circ1.radius + circ2.radius) {
         console.log('u\'s hit dawg');
@@ -78,7 +79,6 @@ const checkShots = () => {
             const ball1 = balls[b];
 //            console.log(ball1.x);
            const hit = checkCollisions(ball1, shots[i]);
-            const playerHit = checkCollisions(ball1, char1);
                
             if(hit){
                 sockets.handleHitBall(i, b);
@@ -86,6 +86,7 @@ const checkShots = () => {
                 i--;
                 break;
             }
+               
         }
           
       }
@@ -94,11 +95,36 @@ const checkShots = () => {
   }
 };
 
+const checkBall = () => {
+    
+     let keys = Object.keys(charList);
+    let characters = charList;
+    
+    for (let k = 0; k < keys.length; k++) {
+        const char1 = characters[keys[k]];
+          
+           for(b = 0; b < balls.length; b++){
+            const ball1 = balls[b];
+//            console.log(ball1.x);
+            const playerHit = checkCollisions(ball1, char1);
+               
+            if(playerHit){
+//                delete charList[char1.hash];
+                sockets.handleShot(char1);
+            }
+        }
+          
+      }
+       
+};
+
 const addBall = () => {
   const createdAt = new Date();
   let directNum = Math.floor(Math.random() * (7 - 0));
   let typeNum = Math.floor(Math.random() * (3 - 0));
   const newBall = new Ball(createdAt.getTime());
+  newBall.x = Math.floor(Math.random() * (790 - 10));
+  newBall.y = Math.floor(Math.random() * (790 - 10));
   newBall.destX = ballDirections[directNum].x;
   newBall.destY = ballDirections[directNum].y;
   newBall.type = ballTypes[typeNum]; 
@@ -161,12 +187,13 @@ const addShot = (shot) => {
 // check for collisions every 20ms
 setInterval(() => {
   checkShots();
+  checkBall();
 }, 20);
 
 setInterval(() => {
   addBall();
     console.log(balls.length);
-}, 5000);
+}, 2000);
 
 
 

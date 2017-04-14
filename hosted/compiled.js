@@ -16,24 +16,25 @@ var spriteSizes = {
   HEIGHT: 121
 };
 
-var lerp = function lerp(v0, v1, alpha) {
-  return (1 - alpha) * v0 + alpha * v1;
-};
 
 var redraw = function redraw(time) {
   updatePosition();
 
-  ctx.clearRect(0, 0, 500, 500);
+  ctx.clearRect(0, 0, 800, 800);
 
   var keys = Object.keys(squares);
   
     
   for (var i = 0; i < keys.length; i++) {
-
+    
+     
     var square = squares[keys[i]];
 
     //if alpha less than 1, increase it by 0.01
-    if (square.alpha < 1) square.alpha += 0.05;
+      console.log(square.playable);
+       if(square.playable == true){
+           square.alpha = 1;
+       }
 
     if (square.hash === hash) {
       ctx.filter = "none";
@@ -68,7 +69,8 @@ var redraw = function redraw(time) {
                        square.y = canvas.height;
                    }
  
-      
+      ctx.save();
+      ctx.globalAlpha = square.alpha;
       ctx.beginPath();
       ctx.arc(square.x, square.y, square.radius, 0, 2*Math.PI);
       ctx.fill();
@@ -82,14 +84,15 @@ var redraw = function redraw(time) {
       ctx.closePath();
       ctx.fill();
       ctx.stroke();
+      ctx.restore();
       
   }
     if(balls.length > 0){
     for(var b = 0; b < balls.length; b++){
         var ball = balls[b];
         
-        ball.x += ball.destX;
-        ball.y += ball.destY;
+        ball.x += ball.destX * ball.speed;
+        ball.y += ball.destY * ball.speed;
         ball.index = b;
     
       ctx.save();   
@@ -202,6 +205,7 @@ var keyDownHandler = function keyDownHandler(e) {
   var square = squares[hash];
 
   // W OR UP
+    if(square.playable){
   if (keyPressed === 87 || keyPressed === 38) {
     square.moveUp = true;
   }
@@ -213,6 +217,7 @@ var keyDownHandler = function keyDownHandler(e) {
       else if (keyPressed === 68 || keyPressed === 39) {
           square.moveRight = true;
         }
+    }
 };
 
 var keyUpHandler = function keyUpHandler(e) {
@@ -220,6 +225,7 @@ var keyUpHandler = function keyUpHandler(e) {
   var square = squares[hash];
 
   // W OR UP
+    if(square.playable){
   if (keyPressed === 87 || keyPressed === 38) {
     square.moveUp = false;
   }
@@ -233,6 +239,7 @@ var keyUpHandler = function keyUpHandler(e) {
         } else if (keyPressed === 32) {
           sendShot();
         } 
+    }
 };
 
 var init = function init() {
@@ -286,7 +293,7 @@ var update = function update(data) {
   square.moveRight = data.moveRight;
   square.moveDown = data.moveDown;
   square.moveUp = data.moveUp;
-  square.alpha = 0.05;
+  square.alpha = 0;
   square.angle = data.angle;
   square.velY = data.velY;
   square.velX = data.velX;
@@ -307,6 +314,7 @@ var handleBall = function handleBall(dShot, ball){
     shots.splice(dShot, 1);
     
     balls[ball].destX = -balls[ball].destX;
+    balls[ball].speed += 1;
     socket.emit('updateBallPos', balls[ball]);
 };
 
@@ -350,15 +358,19 @@ var sendShot = function sendShot() {
 };
 
 var playerDeath = function playerDeath(data) {
-  delete squares[data];
+ var square = squares[hash];
+    square.alpha = 0;
+    square.playable = false;
+    square.x = Math.floor(Math.random() * (canvas.width - 0) + 1);
+    square.y = Math.floor(Math.random() * (canvas.height - 0) + 1);
+    
+    setInterval(() => {
+        canPlay(square);
+    }, 5000);
+};
 
-  if (data === hash) {
-    socket.disconnect();
-    ctx.fillRect(0, 0, 500, 500);
-    ctx.fillStyle = 'white';
-    ctx.font = '48px serif';
-    ctx.fillText('You died', 50, 100);
-  }
+var canPlay = function canPlay(player) {
+    player.playable = true;
 };
 
 var updatePosition = function updatePosition() {
@@ -366,6 +378,7 @@ var updatePosition = function updatePosition() {
     
     
   // turn counter clockwise
+    if(square.playable){
   if (square.moveLeft && square.destX > 0 && !square.moveRight) {
       square.angle += square.turnSpeed * -1;
   }
@@ -397,8 +410,8 @@ var updatePosition = function updatePosition() {
       // apply velocity 
       square.x -= square.velX;
       square.y -= square.velY;
-      
-  square.alpha = 0.05;
+}
+  
 
   socket.emit('movementUpdate', square);
 };
