@@ -13,7 +13,7 @@ const ballTypes = ['normal', 'bounce', 'wrap'];
 
 // box collision check between two rectangles
 // of a set width/height
-const checkCollisions = (circ1, circ2, radius) => {
+const checkCollisions = (circ1, circ2) => {
     const distX = (circ1.x + circ1.radius) - (circ2.x - circ2.radius);
     const distY = (circ1.y + circ1.radius) - (circ2.y - circ2.radius);
     const distance = Math.sqrt(distX * distX + distY * distY);
@@ -38,7 +38,7 @@ const checkShotCollision = (character, shotObj) => {
   }
 
   // otherwise check collision of user rect and attack rect
-  return checkCollisions(character, shoot, shoot.radius);
+  return checkCollisions(character, shoot);
 };
 
 // handle each attack and calculate collisions
@@ -73,13 +73,13 @@ const checkShots = () => {
           // if not a hit
          // console.log('miss');
         }
-      }
-      
-        for(b = 0; b < balls.length; b++){
+          
+           for(b = 0; b < balls.length; b++){
             const ball1 = balls[b];
 //            console.log(ball1.x);
-           const hit = checkCollisions(ball1, shots[i], shots[i].radius);
-            
+           const hit = checkCollisions(ball1, shots[i]);
+            const playerHit = checkCollisions(ball1, char1);
+               
             if(hit){
                 sockets.handleHitBall(i, b);
                 shots.splice(i, 1);
@@ -87,6 +87,8 @@ const checkShots = () => {
                 break;
             }
         }
+          
+      }
        
     }
   }
