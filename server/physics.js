@@ -84,6 +84,7 @@ const checkShots = () => {
                 sockets.handleHitBall(i);
                 shots.splice(i, 1);
                 i--;
+                break;
             }
         }
        
