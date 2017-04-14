@@ -62,17 +62,28 @@ var redraw = function redraw(time) {
       ctx.closePath();
   }
 
-  for (var _i = 0; _i < attacks.length; _i++) {
-    var attack = attacks[_i];
+  for (var _i = 0; _i < shots.length; _i++) {
+    var shot = shots[_i];
+      
+      shot.x += shot.speed;
+      
+      ctx.beginPath();
+      ctx.arc(shot.x, shot.y, shot.radius, 0, 2*Math.PI);
+      ctx.fill();
+      ctx.closePath();
+      
 
-    ctx.drawImage(slashImage, attack.x, attack.y, attack.width, attack.height);
-
-    attack.frames++;
-
-    if (attack.frames > 30) {
-      attacks.splice(_i);
-      _i--;
-    }
+    shot.frames++;
+      
+      socket.emit('upShotPos', shot);
+      
+      
+     if(shot.x > canvas.width || shot.x < 0 || shot.y > canvas.height || shot.y < 0){
+         socket.emit('removeShot', _i);
+         shots.splice(_i, 1);
+         _i--;
+     }
+      
   }
 
   animationFrame = requestAnimationFrame(redraw);
@@ -90,7 +101,7 @@ var animationFrame = void 0;
  var angle = 3 * Math.PI / 180;
 
 var squares = {};
-var attacks = [];
+var shots = [];
 
 var keyDownHandler = function keyDownHandler(e) {
   var keyPressed = e.which;
@@ -134,8 +145,8 @@ var keyUpHandler = function keyUpHandler(e) {
       else if (keyPressed === 68 || keyPressed === 39) {
           square.moveRight = false;
         } else if (keyPressed === 32) {
-          sendAttack();
-        }
+          sendShot();
+        } 
 };
 
 var init = function init() {
@@ -149,8 +160,8 @@ var init = function init() {
 
   socket.on('joined', setUser);
   socket.on('updatedMovement', update);
-  socket.on('attackHit', playerDeath);
-  socket.on('attackUpdate', receiveAttack);
+  socket.on('shotHit', playerDeath);
+  socket.on('shotUpdate', receiveShot);
   socket.on('left', removeUser);
 
   document.body.addEventListener('keydown', keyDownHandler);
@@ -185,6 +196,7 @@ var update = function update(data) {
   square.moveDown = data.moveDown;
   square.moveUp = data.moveUp;
   square.alpha = 0.05;
+
 };
 
 var removeUser = function removeUser(data) {
@@ -199,22 +211,26 @@ var setUser = function setUser(data) {
   requestAnimationFrame(redraw);
 };
 
-var receiveAttack = function receiveAttack(data) {
-  attacks.push(data);
+var receiveShot = function receiveShot(data) {
+  shots.push(data);
 };
 
-var sendAttack = function sendAttack() {
+var sendShot = function sendShot() {
   var square = squares[hash];
-
-  var attack = {
+    var createdAt = new Date(); 
+    
+  var shot = {
     hash: hash,
     x: square.x,
     y: square.y,
     direction: square.direction,
+    radius: 10,
+    speed: 2,
+    created: createdAt.getTime(),
     frames: 0
   };
 
-  socket.emit('attack', attack);
+  socket.emit('shot', shot);
 };
 
 var playerDeath = function playerDeath(data) {
@@ -248,6 +264,24 @@ var updatePosition = function updatePosition() {
       angle += 3 * Math.PI / 180;
   }
     
+    if (square.moveUp && square.moveLeft) square.direction = directions.UPLEFT;
+
+  if (square.moveUp && square.moveRight) square.direction = directions.UPRIGHT;
+
+  if (square.moveDown && square.moveLeft) square.direction = directions.DOWNLEFT;
+
+  if (square.moveDown && square.moveRight) square.direction = directions.DOWNRIGHT;
+
+  if (square.moveDown && !(square.moveRight || square.moveLeft)) square.direction = directions.DOWN;
+
+  if (square.moveUp && !(square.moveRight || square.moveLeft)) square.direction = directions.UP;
+
+  if (square.moveLeft && !(square.moveUp || square.moveDown)) square.direction = directions.LEFT;
+
+  if (square.moveRight && !(square.moveUp || square.moveDown)) square.direction = directions.RIGHT;
+
+    
+    //console.log('Pos X: ' + square.x + ' Pos Y: ' + square.y + ' Angle: ' + angle);
 
   square.alpha = 0.05;
 

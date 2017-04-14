@@ -2,15 +2,17 @@
 const sockets = require('./sockets.js');
 
 let charList = {}; // list of characters
-const attacks = []; // array of attack to handle
+const shots = []; // array of shots to handle
 
 // box collision check between two rectangles
 // of a set width/height
-const checkCollisions = (rect1, rect2, width, height) => {
-  if (rect1.x < rect2.x + width &&
-     rect1.x + width > rect2.x &&
-     rect1.y < rect2.y + height &&
-     height + rect1.y > rect2.y) {
+const checkCollisions = (circ1, circ2, radius) => {
+    const distX = circ1.x - circ2.x;
+    const distY = circ1.y - circ2.y;
+    const distance = Math.sqrt(distX * distX + distY * distY);
+    
+    if (distance < circ1.width + circ2.radius) {
+        console.log('u\'s hit dawg');
     return true; // is colliding
   }
   return false; // is not colliding
@@ -19,53 +21,63 @@ const checkCollisions = (rect1, rect2, width, height) => {
 // check attack collisions to see if colliding with the
 // user themselves and return false so users cannot damage
 // themselves
-const checkAttackCollision = (character, attackObj) => {
-  const attack = attackObj;
+const checkShotCollision = (character, shotObj) => {
+  const shoot = shotObj;
 
   // if attacking themselves, we won't check collision
-  if (character.hash === attack.hash) {
+  if (character.hash === shoot.hash) {
     return false;
   }
 
   // otherwise check collision of user rect and attack rect
-  return checkCollisions(character, attack, attack.width, attack.height);
+  return checkCollisions(character, shoot, shoot.radius);
 };
 
 // handle each attack and calculate collisions
-const checkAttacks = () => {
+const checkShots = () => {
   // if we have attack
-  if (attacks.length > 0) {
+    //console.log(shots.length);
+  if (shots.length > 0) {
     // get all characters
     const keys = Object.keys(charList);
     const characters = charList;
 
     // for each attack
-    for (let i = 0; i < attacks.length; i++) {
+    for (let i = 0; i < shots.length; i++) {
       // for each character
       for (let k = 0; k < keys.length; k++) {
         const char1 = characters[keys[k]];
 
         // call to see if the attack and character hit
-        const hit = checkAttackCollision(char1, attacks[i]);
+        const hit = checkShotCollision(char1, shots[i]);
 
         if (hit) { // if a hit
           // ask sockets to notify users which character was hit
-          sockets.handleAttack(char1.hash);
+          sockets.handleShot(char1.hash);
           // kill that character and remove from our user list
           delete charList[char1.hash];
         } else {
           // if not a hit
-          console.log('miss');
+         // console.log('miss');
         }
       }
 
       // once the attack has been calculated again all users
       // remove this attack and move onto the next one
-      attacks.splice(i);
+//      shots.splice(i);
       // decrease i since our splice changes the array length
-      i--;
+//      i--;
     }
   }
+};
+
+
+const updateShot = (shot) => {
+    shots[shot.created] = shot; 
+};
+
+const removeShot = (shot) => {
+    shots.splice(shot, 1);
 };
 
 // update our entire character list
@@ -79,15 +91,17 @@ const setCharacter = (character) => {
 };
 
 // add a new attack to calculate physics on
-const addAttack = (attack) => {
-  attacks.push(attack);
+const addShot = (shot) => {
+  shots.push(shot);
 };
 
 // check for collisions every 20ms
 setInterval(() => {
-  checkAttacks();
+  checkShots();
 }, 20);
 
 module.exports.setCharacterList = setCharacterList;
 module.exports.setCharacter = setCharacter;
-module.exports.addAttack = addAttack;
+module.exports.addShot = addShot;
+module.exports.updateShot = updateShot;
+module.exports.removeShot = removeShot;
